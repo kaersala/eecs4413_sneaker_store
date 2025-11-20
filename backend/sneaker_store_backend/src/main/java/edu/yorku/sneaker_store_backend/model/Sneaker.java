@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 
 /**
  * Entity class representing a sneaker product in the system.
- * This class is mapped to the "sneakers" table in the database.
+ * This class is mapped to the "sneaker" table in the database.
  */
 @Entity
 @Table(name = "sneakers")
