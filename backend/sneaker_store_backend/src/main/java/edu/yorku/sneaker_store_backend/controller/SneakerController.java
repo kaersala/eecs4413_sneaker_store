@@ -31,6 +31,19 @@ public class SneakerController {
     }
 
     /**
+     * GET /api/sneakers/filter
+     * Applies optional filters for brand, colorway, and keyword.
+     */
+    @GetMapping("/filter")
+    public List<Sneaker> filter(
+            @RequestParam(name = "brand", required = false) String brand,
+            @RequestParam(name = "colorway", required = false) String colorway,
+            @RequestParam(name = "q", required = false) String keyword
+    ) {
+        return sneakerService.filter(brand, colorway, keyword);
+    }
+
+    /**
      * GET /api/sneakers/{id}
      * Retrieves a sneaker by its ID.
      */
