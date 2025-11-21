@@ -5,6 +5,7 @@ import edu.yorku.sneaker_store_backend.repository.SneakerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service layer for handling sneaker-related business logic.
@@ -40,6 +41,18 @@ public class SneakerService {
             return findAll();
         }
         return sneakerRepository.findByNameContainingIgnoreCase(keyword);
+    }
+
+    /**
+     * Applies optional filters for brand, colorway, and keyword.
+     */
+    public List<Sneaker> filter(String brand, String colorway, String keyword) {
+        List<Sneaker> base = searchByKeyword(keyword);
+
+        return base.stream()
+                .filter(s -> !hasText(brand) || equalsIgnoreCase(s.getBrand(), brand))
+                .filter(s -> !hasText(colorway) || equalsIgnoreCase(s.getColorway(), colorway))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -83,5 +96,13 @@ public class SneakerService {
         }
         sneakerRepository.deleteById(id);
         return true;
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
+
+    private boolean equalsIgnoreCase(String value, String target) {
+        return value != null && value.equalsIgnoreCase(target);
     }
 }
