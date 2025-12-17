@@ -1,0 +1,18 @@
+#all-products h1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: black;
+  font-size: 50px;
+  font-weight: 600;
+}
+
+#all-products hr {
+  width: 200px;
+  height: 6px;
+  border-radius: 10px;
+  background: black;
+  margin: 10px auto; 
+  border: none;      
+}
