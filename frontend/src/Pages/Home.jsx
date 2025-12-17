@@ -1,4 +1,4 @@
-import Hero from '../Components/Hero/Hero';
+import Hero from '../Components/Hero';
 import Sneaker from './Sneaker';
 
 const Home = () => {
