@@ -16,21 +16,14 @@ const Checkout = () => {
 	const [successMessage, setSuccessMessage] = useState('');
 	const [errorMessage, setErrorMessage] = useState('');
 
-	// Redirect if cart is empty or user not logged in
 	useEffect(() => {
-		console.log('[Debug] Checkout mounted, cartProductList:', cartProductList);
-
 		if (!cartProductList.length && !checkoutCompleted) {
-			console.log('[Debug] Cart is empty, redirecting to sneakers');
 			navigate('/sneakers');
 			return;
 		}
 
 		const currentUser = AuthService.getCurrentUser();
-		console.log('[Debug] Current user:', currentUser);
-
 		if (!currentUser?.id) {
-			console.log('[Debug] No user logged in, redirecting to login');
 			alert('You must be logged in to checkout.');
 			navigate('/login');
 			return;
@@ -41,30 +34,24 @@ const Checkout = () => {
 		setShipping(currentUser.shipping || { firstName: '', lastName: '', address: '', city: '', zip: '' });
 	}, [navigate, cartProductList, checkoutCompleted]);
 
-	const totalPrice = cartProductList.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+	const totalPrice = cartProductList.reduce(
+		(sum, item) => sum + parseFloat(item.price) * item.quantity,
+		0
+	);
 
 	const handleConfirmOrder = async () => {
-		console.log('[Debug] handleConfirmOrder called');
-		console.log('[Debug] user:', user);
-		console.log('[Debug] payment:', payment);
-
 		if (!user?.id) {
-			console.log('[Debug] No user logged in');
 			alert('You must be logged in to checkout.');
 			return;
 		}
 
 		if (!payment.cardNumber || !payment.expiry || !payment.cvc) {
-			console.log('[Debug] Payment info missing');
 			alert('Please enter all payment information.');
 			return;
 		}
 
 		const token = localStorage.getItem('token');
-		console.log('[Debug] token from localStorage:', token);
-
 		if (!token) {
-			console.log('[Debug] No token found in localStorage');
 			alert('You must be logged in to place an order.');
 			return;
 		}
@@ -80,147 +67,217 @@ const Checkout = () => {
 			billingAddress: `${billing.address}, ${billing.city}, ${billing.zip}`,
 		};
 
-		console.log('[Debug] checkoutData prepared:', checkoutData);
-
 		try {
 			const response = await CheckoutService.createOrder(checkoutData, token);
-			console.log('[Debug] Checkout response:', response);
 
 			if (response.status === 'ERROR' || response.message?.toLowerCase().includes('failed')) {
-				console.log('[Debug] Payment failed');
 				alert(response.message || 'Credit Card Authorization Failed.');
-				return; // allow user to retry
+				return;
 			}
 
-			// Payment successful
 			setCheckoutCompleted(true);
 			alert(`Order ${response.orderNumber} successfully added!`);
-
-			// Navigate to order summary
-			console.log('[Debug] Navigating to order-summary page');
 			navigate(`/order-summary/${response.orderId}`, { state: { order: response } });
 
-			// Clear cart asynchronously
 			setTimeout(() => {
 				clearCart();
-				console.log('[Debug] Cleared cart');
 			}, 0);
 		} catch (err) {
-			console.error('[Debug] Order submission failed:', err);
 			alert('Failed to place order. Please try again.');
 			setErrorMessage('Failed to place order.');
 		}
 	};
 
+	// Tailwind class variables
+	const container = "p-6 bg-gray-50 min-h-screen";
+	const title = "text-2xl font-bold text-center mb-6";
+	const section = "mb-6";
+	const sectionTitle = "text-lg font-semibold mb-2";
+	const inputClass = "border px-3 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400";
+	const grid2 = "grid grid-cols-1 md:grid-cols-2 gap-4";
+	const grid3 = "grid grid-cols-1 md:grid-cols-3 gap-4";
+	const alertError = "text-red-600 mb-4";
+	const alertSuccess = "bg-green-100 text-green-800 p-3 rounded mb-4";
+	const table = "min-w-full border border-gray-300";
+	const tableHeader = "bg-black text-white";
+	const tableCell = "border px-4 py-2";
+	const hoverRow = "hover:bg-gray-100";
+	const summary = "mt-4 font-semibold";
+	const buttonBlue = "bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-800 transition";
+	const buttonGray = "bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-800 transition";
+	const buttonGroup = "flex gap-4";
+
 	return (
-		<div>
-			<h2>Checkout</h2>
+		<div className={container}>
+			<h2 className={title}>Checkout</h2>
 
-			{errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
-			{successMessage && <div style={{ padding: '10px', margin: '10px 0', backgroundColor: '#d4edda', color: '#155724', borderRadius: '5px' }}>{successMessage}</div>}
-
-			{cartProductList.length === 0 && !checkoutCompleted && <p>Your cart is empty</p>}
-
-			<section>
-				<h3>Billing Information</h3>
-				<div>
-					<label>First Name: </label>
-					<input value={billing.firstName} onChange={(e) => setBilling({ ...billing, firstName: e.target.value })} />
-				</div>
-				<div>
-					<label>Last Name: </label>
-					<input value={billing.lastName} onChange={(e) => setBilling({ ...billing, lastName: e.target.value })} />
-				</div>
-				<div>
-					<label>Address: </label>
-					<input value={billing.address} onChange={(e) => setBilling({ ...billing, address: e.target.value })} />
-				</div>
-				<div>
-					<label>City: </label>
-					<input value={billing.city} onChange={(e) => setBilling({ ...billing, city: e.target.value })} />
-				</div>
-				<div>
-					<label>Postal Code: </label>
-					<input value={billing.zip} onChange={(e) => setBilling({ ...billing, zip: e.target.value })} />
+			{errorMessage && <div className={alertError}>{errorMessage}</div>}
+			{successMessage && <div className={alertSuccess}>{successMessage}</div>}
+			{/* Billing */}
+			<section className={section}>
+				<h3 className={sectionTitle}>Billing Information</h3>
+				<div className={grid2}>
+					<div>
+						<label className="block text-sm font-medium mb-1">First Name</label>
+						<input
+							className={inputClass}
+							value={billing.firstName}
+							onChange={(e) => setBilling({ ...billing, firstName: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Last Name</label>
+						<input
+							className={inputClass}
+							value={billing.lastName}
+							onChange={(e) => setBilling({ ...billing, lastName: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Address</label>
+						<input
+							className={inputClass}
+							value={billing.address}
+							onChange={(e) => setBilling({ ...billing, address: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">City</label>
+						<input
+							className={inputClass}
+							value={billing.city}
+							onChange={(e) => setBilling({ ...billing, city: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Postal Code</label>
+						<input
+							className={inputClass}
+							value={billing.zip}
+							onChange={(e) => setBilling({ ...billing, zip: e.target.value })}
+						/>
+					</div>
 				</div>
 			</section>
 
-			<section>
-				<h3>Shipping Information</h3>
-				<div>
-					<label>First Name: </label>
-					<input value={shipping.firstName} onChange={(e) => setShipping({ ...shipping, firstName: e.target.value })} />
-				</div>
-				<div>
-					<label>Last Name: </label>
-					<input value={shipping.lastName} onChange={(e) => setShipping({ ...shipping, lastName: e.target.value })} />
-				</div>
-				<div>
-					<label>Address: </label>
-					<input value={shipping.address} onChange={(e) => setShipping({ ...shipping, address: e.target.value })} />
-				</div>
-				<div>
-					<label>City: </label>
-					<input value={shipping.city} onChange={(e) => setShipping({ ...shipping, city: e.target.value })} />
-				</div>
-				<div>
-					<label>Postal Code: </label>
-					<input value={shipping.zip} onChange={(e) => setShipping({ ...shipping, zip: e.target.value })} />
+			{/* Shipping */}
+			<section className={section}>
+				<h3 className={sectionTitle}>Shipping Information</h3>
+				<div className={grid2}>
+					<div>
+						<label className="block text-sm font-medium mb-1">First Name</label>
+						<input
+							className={inputClass}
+							value={shipping.firstName}
+							onChange={(e) => setShipping({ ...shipping, firstName: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Last Name</label>
+						<input
+							className={inputClass}
+							value={shipping.lastName}
+							onChange={(e) => setShipping({ ...shipping, lastName: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Address</label>
+						<input
+							className={inputClass}
+							value={shipping.address}
+							onChange={(e) => setShipping({ ...shipping, address: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">City</label>
+						<input
+							className={inputClass}
+							value={shipping.city}
+							onChange={(e) => setShipping({ ...shipping, city: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Postal Code</label>
+						<input
+							className={inputClass}
+							value={shipping.zip}
+							onChange={(e) => setShipping({ ...shipping, zip: e.target.value })}
+						/>
+					</div>
 				</div>
 			</section>
 
-			<section>
-				<h3>Payment Information</h3>
-				<div>
-					<label>Card Number: </label>
-					<input value={payment.cardNumber} onChange={(e) => setPayment({ ...payment, cardNumber: e.target.value })} />
-				</div>
-				<div>
-					<label>Expiry: </label>
-					<input value={payment.expiry} onChange={(e) => setPayment({ ...payment, expiry: e.target.value })} />
-				</div>
-				<div>
-					<label>CVC: </label>
-					<input value={payment.cvc} onChange={(e) => setPayment({ ...payment, cvc: e.target.value })} />
+			{/* Payment */}
+			<section className={section}>
+				<h3 className={sectionTitle}>Payment Information</h3>
+				<div className={grid3}>
+					<div>
+						<label className="block text-sm font-medium mb-1">Card Number</label>
+						<input
+							className={inputClass}
+							value={payment.cardNumber}
+							onChange={(e) => setPayment({ ...payment, cardNumber: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">Expiry</label>
+						<input
+							className={inputClass}
+							value={payment.expiry}
+							onChange={(e) => setPayment({ ...payment, expiry: e.target.value })}
+						/>
+					</div>
+					<div>
+						<label className="block text-sm font-medium mb-1">CVC</label>
+						<input
+							className={inputClass}
+							value={payment.cvc}
+							onChange={(e) => setPayment({ ...payment, cvc: e.target.value })}
+						/>
+					</div>
 				</div>
 			</section>
 
-			<section>
-				<h3>Order Summary</h3>
-				<table>
-					<thead>
+
+			{/* Order Summary */}
+			<section className={section}>
+				<h3 className={sectionTitle}>Order Summary</h3>
+				<table className={table}>
+					<thead className={tableHeader}>
 						<tr>
-							<th>Product</th>
-							<th>Size</th>
-							<th>Qty</th>
-							<th>Price</th>
-							<th>Subtotal</th>
+							<th className={tableCell}>Product</th>
+							<th className={tableCell}>Size</th>
+							<th className={tableCell}>Qty</th>
+							<th className={tableCell}>Price</th>
+							<th className={tableCell}>Subtotal</th>
 						</tr>
 					</thead>
 					<tbody>
-						{cartProductList.map((item) => {
-							const subtotal = item.price * item.quantity;
-							return (
-								<tr key={`${item.id}-${item.size}`}>
-									<td>{item.name}</td>
-									<td>{item.size || '-'}</td>
-									<td>{item.quantity}</td>
-									<td>${item.price.toFixed(2)}</td>
-									<td>${subtotal.toFixed(2)}</td>
-								</tr>
-							);
-						})}
+						{cartProductList.map((item) => (
+							<tr key={`${item.id}-${item.size}`} className={hoverRow}>
+								<td className={tableCell}>{item.name}</td>
+								<td className={tableCell}>{item.size || '-'}</td>
+								<td className={tableCell}>{item.quantity}</td>
+								<td className={tableCell}>${item.price.toFixed(2)}</td>
+								<td className={tableCell}>${(item.price * item.quantity).toFixed(2)}</td>
+							</tr>
+						))}
 					</tbody>
 				</table>
-				<div>
+
+				<div className={summary}>
 					<p>Total Items: {getTotalItems()}</p>
 					<p>Total Price: ${totalPrice.toFixed(2)}</p>
 				</div>
 			</section>
 
-			<div>
-				<button onClick={handleConfirmOrder}>Confirm Order</button>
-				<button onClick={() => navigate('/cart')}>Back to Cart</button>
+			<div className={buttonGroup}>
+				<button onClick={handleConfirmOrder} className={buttonBlue}>
+					Confirm Order
+				</button>
+				<button onClick={() => navigate('/cart')} className={buttonGray}>
+					Back to Cart
+				</button>
 			</div>
 		</div>
 	);

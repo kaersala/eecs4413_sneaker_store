@@ -56,10 +56,7 @@ const SneakerCategory = () => {
         {/* Search Bar */}
         <div className="flex flex-col sm:flex-row gap-3 mb-8">
           <input
-            type="text"
-            placeholder="Search sneakers..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
+            type="text" placeholder="Search sneakers..." value={searchKeyword} onChange={(e) => setSearchKeyword(e.target.value)}
             className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           />
           <button
@@ -78,21 +75,17 @@ const SneakerCategory = () => {
 
           <div className="flex gap-3">
             <select
-              value={selectedBrand}
-              onChange={(e) => setSelectedBrand(e.target.value)}
+              value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}
               className="px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500"
             >
               <option value="">All Brands</option>
               {brands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
+                <option key={brand} value={brand}>{brand}</option>
               ))}
             </select>
 
             <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
+              value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}
               className="px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500"
             >
               <option value="">Sort by</option>
@@ -108,11 +101,7 @@ const SneakerCategory = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {sortedProducts.map((item) => (
             <Item
-              key={item.id}
-              id={item.id}
-              name={item.name}
-              image={item.imageUrl}
-              price={`$${item.price}`}
+              key={item.id} id={item.id} name={item.name} image={item.imageUrl} price={`$${item.price}`}
             />
           ))}
         </div>

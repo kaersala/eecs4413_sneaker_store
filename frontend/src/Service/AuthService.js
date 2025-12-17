@@ -14,8 +14,8 @@ const loginUser = async (loginDetails) => {
 
     if (data.token) {
         localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.customerId); // store ID
-        currentUser = { id: data.customerId }; // basic user object
+        localStorage.setItem("userId", data.customerId); 
+        currentUser = { id: data.customerId }; 
     }
 
     return data;
@@ -30,7 +30,23 @@ const logoutUser = () => {
     currentUser = null;
 };
 
+const updateProfile = async (profileData) => {
+    const token = localStorage.getItem("token");
+
+    const response = await axios.put(
+        `${BASE_URL}/api/auth/profile`,
+        profileData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    );
+
+    return response.data;
+};
+
 const isAuthenticated = () => !!localStorage.getItem("token");
 const isAdmin = () => localStorage.getItem("role") === "ADMIN";
 
-export default { registerUser, loginUser, logoutUser, isAuthenticated, isAdmin, getCurrentUser };
+export default { registerUser, loginUser, logoutUser, isAuthenticated, isAdmin, getCurrentUser, updateProfile };

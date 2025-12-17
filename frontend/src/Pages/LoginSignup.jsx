@@ -7,12 +7,6 @@ const LoginSignup = () => {
 	const [password, setPassword] = useState('');
 	const navigate = useNavigate();
 
-	const handleEmail = (e) => {
-		setEmail(e.target.value);
-	};
-	const handlePassword = (e) => {
-		setPassword(e.target.value);
-	};
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		try {
@@ -25,9 +19,7 @@ const LoginSignup = () => {
 			}
 
 			alert('Successful login');
-			console.log('[Debug] Logged in user ID:', customerId);
 
-			// Assign role
 			if (email === 'demo@sneakerstore.test') {
 				localStorage.setItem('role', 'ADMIN');
 				navigate('/admin');
@@ -42,27 +34,49 @@ const LoginSignup = () => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit}>
-			<div className="loginSignup">
-				<div className="loginSignup_container">
-					<h1>Login</h1>
+		<div className="min-h-screen flex items-center justify-center bg-gray-100">
+			<form
+				onSubmit={handleSubmit}
+				className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md"
+			>
+				<h1 className="text-2xl font-bold text-center mb-6">Login</h1>
 
-					<div className="loginSignup_fields">
-						<input type="text" placeholder="Email address" value={email} onChange={handleEmail} />
-						<input type="password" placeholder="Password" value={password} onChange={handlePassword} />
-					</div>
+				<div className="space-y-4">
+					<input
+						type="text"
+						placeholder="Email address"
+						value={email}
+						onChange={(e) => setEmail(e.target.value)}
+						className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 
-					<button className="login_button">Login</button>
-
-					<p>
-						Not a member?{' '}
-						<span className="signup_link" onClick={() => navigate('/register')}>
-							Sign Up
-						</span>
-					</p>
+					<input
+						type="password"
+						placeholder="Password"
+						value={password}
+						onChange={(e) => setPassword(e.target.value)}
+						className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black"
+					/>
 				</div>
-			</div>
-		</form>
+
+				<button
+					type="submit"
+					className="w-full mt-6 bg-red-600 text-white py-2 rounded-lg hover:bg-red-800 transition"
+				>
+					Login
+				</button>
+
+				<p className="text-center text-sm mt-4">
+					Not a member?{' '}
+					<span
+						className="text-black font-semibold cursor-pointer hover:underline"
+						onClick={() => navigate('/register')}
+					>
+						Sign Up
+					</span>
+				</p>
+			</form>
+		</div>
 	);
 };
 
