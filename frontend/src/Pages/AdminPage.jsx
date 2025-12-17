@@ -29,12 +29,7 @@ const AdminPage = () => {
           List of Products
         </button>
 
-        <button
-          onClick={() => navigate('/SalesHistory')}
-          className="w-64 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
-        >
-          Sale History
-        </button>
+        
       </div>
     </div>
   );
