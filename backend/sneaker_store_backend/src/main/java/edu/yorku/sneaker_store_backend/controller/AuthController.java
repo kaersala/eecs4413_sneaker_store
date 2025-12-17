@@ -3,6 +3,7 @@ package edu.yorku.sneaker_store_backend.controller;
 import edu.yorku.sneaker_store_backend.dto.AuthResponseDto;
 import edu.yorku.sneaker_store_backend.dto.LoginRequestDto;
 import edu.yorku.sneaker_store_backend.dto.RegisterRequestDto;
+import edu.yorku.sneaker_store_backend.dto.UpdateProfileRequestDto;
 import edu.yorku.sneaker_store_backend.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,6 +68,27 @@ public class AuthController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(failure("Unable to process login"));
+        }
+    }
+
+    /**
+     * PUT /api/auth/profile
+     * <p>
+     * Accepts {@link UpdateProfileRequestDto} where the caller specifies their id, current password,
+     * and any personal info they wish to refresh (names, phone, address, etc.). Returns
+     * {@link AuthResponseDto} just like login/register so the client can keep reusing the helper.
+     */
+    @PutMapping("/profile")
+    public ResponseEntity<AuthResponseDto> updateProfile(@RequestBody UpdateProfileRequestDto request) {
+        try {
+            return ResponseEntity.ok(authService.updateProfile(request));
+        } catch (SecurityException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(failure(ex.getMessage()));
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failure(ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(failure("Unable to update profile"));
         }
     }
 

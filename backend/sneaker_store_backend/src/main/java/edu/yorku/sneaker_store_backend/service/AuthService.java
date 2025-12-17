@@ -3,6 +3,7 @@ package edu.yorku.sneaker_store_backend.service;
 import edu.yorku.sneaker_store_backend.dto.AuthResponseDto;
 import edu.yorku.sneaker_store_backend.dto.LoginRequestDto;
 import edu.yorku.sneaker_store_backend.dto.RegisterRequestDto;
+import edu.yorku.sneaker_store_backend.dto.UpdateProfileRequestDto;
 import edu.yorku.sneaker_store_backend.model.Customer;
 import edu.yorku.sneaker_store_backend.repository.CustomerRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -77,6 +78,66 @@ public class AuthService {
         }
 
         return successResponse(customer, "Login successful");
+    }
+
+    /**
+     * Allows logged in customers to refresh their personal information. We re-check the password to
+     * keep the behavior consistent with the lightweight login system used elsewhere in the app.
+     */
+    public AuthResponseDto updateProfile(UpdateProfileRequestDto request) {
+        if (request.getCustomerId() == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+        if (!hasText(request.getCurrentPassword())) {
+            throw new IllegalArgumentException("Current password is required");
+        }
+
+        Customer customer = customerRepository.findById(request.getCustomerId())
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), customer.getPasswordHash())) {
+            throw new SecurityException("Invalid email or password");
+        }
+
+        if (hasText(request.getFirstName())) {
+            customer.setFirstName(request.getFirstName());
+        }
+        if (hasText(request.getLastName())) {
+            customer.setLastName(request.getLastName());
+        }
+        if (hasText(request.getEmail())) {
+            String normalizedEmail = request.getEmail().trim();
+            if (!normalizedEmail.equalsIgnoreCase(customer.getEmail())) {
+                if (customerRepository.existsByEmail(normalizedEmail)) {
+                    throw new IllegalArgumentException("Email already registered");
+                }
+                customer.setEmail(normalizedEmail);
+            }
+        }
+        if (request.getPhoneNumber() != null) {
+            customer.setPhoneNumber(request.getPhoneNumber());
+        }
+        if (request.getAddressLine1() != null) {
+            customer.setAddressLine1(request.getAddressLine1());
+        }
+        if (request.getAddressLine2() != null) {
+            customer.setAddressLine2(request.getAddressLine2());
+        }
+        if (request.getCity() != null) {
+            customer.setCity(request.getCity());
+        }
+        if (request.getProvince() != null) {
+            customer.setProvince(request.getProvince());
+        }
+        if (request.getPostalCode() != null) {
+            customer.setPostalCode(request.getPostalCode());
+        }
+        if (request.getCountry() != null) {
+            customer.setCountry(request.getCountry());
+        }
+
+        Customer saved = customerRepository.save(customer);
+        return successResponse(saved, "Profile updated successfully");
     }
 
     private AuthResponseDto successResponse(Customer customer, String message) {
