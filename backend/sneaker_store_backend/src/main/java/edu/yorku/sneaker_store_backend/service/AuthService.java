@@ -1,6 +1,7 @@
 package edu.yorku.sneaker_store_backend.service;
 
 import edu.yorku.sneaker_store_backend.dto.AuthResponseDto;
+import edu.yorku.sneaker_store_backend.dto.CustomerProfileDto;
 import edu.yorku.sneaker_store_backend.dto.LoginRequestDto;
 import edu.yorku.sneaker_store_backend.dto.RegisterRequestDto;
 import edu.yorku.sneaker_store_backend.dto.UpdateProfileRequestDto;
@@ -138,6 +139,33 @@ public class AuthService {
 
         Customer saved = customerRepository.save(customer);
         return successResponse(saved, "Profile updated successfully");
+    }
+
+    /**
+     * Returns the persisted profile data for the supplied customer id so clients can pre-populate
+     * profile forms before sending an update.
+     */
+    public CustomerProfileDto getProfile(Long customerId) {
+        if (customerId == null) {
+            throw new IllegalArgumentException("Customer ID is required");
+        }
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("Customer not found"));
+
+        return CustomerProfileDto.builder()
+                .id(customer.getId())
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .email(customer.getEmail())
+                .phoneNumber(customer.getPhoneNumber())
+                .addressLine1(customer.getAddressLine1())
+                .addressLine2(customer.getAddressLine2())
+                .city(customer.getCity())
+                .province(customer.getProvince())
+                .postalCode(customer.getPostalCode())
+                .country(customer.getCountry())
+                .build();
     }
 
     private AuthResponseDto successResponse(Customer customer, String message) {

@@ -1,6 +1,7 @@
 package edu.yorku.sneaker_store_backend.controller;
 
 import edu.yorku.sneaker_store_backend.dto.AuthResponseDto;
+import edu.yorku.sneaker_store_backend.dto.CustomerProfileDto;
 import edu.yorku.sneaker_store_backend.dto.LoginRequestDto;
 import edu.yorku.sneaker_store_backend.dto.RegisterRequestDto;
 import edu.yorku.sneaker_store_backend.dto.UpdateProfileRequestDto;
@@ -89,6 +90,27 @@ public class AuthController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(failure("Unable to update profile"));
+        }
+    }
+
+    /**
+     * GET /api/auth/profile/{id}
+     * <p>
+     * Allows clients to fetch their persisted profile before editing so forms can show current data.
+     */
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<?> getProfile(@PathVariable("id") Long customerId) {
+        try {
+            CustomerProfileDto profile = authService.getProfile(customerId);
+            return ResponseEntity.ok(profile);
+        } catch (IllegalArgumentException ex) {
+            HttpStatus status = "Customer not found".equalsIgnoreCase(ex.getMessage())
+                    ? HttpStatus.NOT_FOUND
+                    : HttpStatus.BAD_REQUEST;
+            return ResponseEntity.status(status).body(failure(ex.getMessage()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(failure("Unable to fetch profile"));
         }
     }
 

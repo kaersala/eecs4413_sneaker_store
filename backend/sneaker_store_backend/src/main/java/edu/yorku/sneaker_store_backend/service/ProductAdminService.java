@@ -5,6 +5,7 @@ import edu.yorku.sneaker_store_backend.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Admin-focused operations for managing products in the catalog.
@@ -13,9 +14,12 @@ import java.util.List;
 public class ProductAdminService {
 
     private final ProductRepository productRepository;
+    private final InventoryHistoryService inventoryHistoryService;
 
-    public ProductAdminService(ProductRepository productRepository) {
+    public ProductAdminService(ProductRepository productRepository,
+                               InventoryHistoryService inventoryHistoryService) {
         this.productRepository = productRepository;
+        this.inventoryHistoryService = inventoryHistoryService;
     }
 
     public List<Product> listAll() {
@@ -35,6 +39,9 @@ public class ProductAdminService {
         if (existing == null) {
             return null;
         }
+        var previousPrice = existing.getPrice();
+        var previousStock = existing.getStockQuantity();
+
         existing.setSku(payload.getSku());
         existing.setName(payload.getName());
         existing.setBrand(payload.getBrand());
@@ -42,7 +49,20 @@ public class ProductAdminService {
         existing.setPrice(payload.getPrice());
         existing.setStockQuantity(payload.getStockQuantity());
         existing.setImageUrl(payload.getImageUrl());
-        return productRepository.save(existing);
+
+        Product saved = productRepository.save(existing);
+
+        if (payload.getPrice() != null
+                && previousPrice != null
+                && payload.getPrice().compareTo(previousPrice) != 0) {
+            inventoryHistoryService.recordPriceChange(saved, previousPrice, saved.getPrice());
+        }
+
+        if (payload.getStockQuantity() != null && !Objects.equals(previousStock, payload.getStockQuantity())) {
+            inventoryHistoryService.recordStockAdjustment(saved, previousStock, saved.getStockQuantity());
+        }
+
+        return saved;
     }
 
     public boolean delete(Long id) {

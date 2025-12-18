@@ -1,6 +1,8 @@
 package edu.yorku.sneaker_store_backend.controller.admin;
 
+import edu.yorku.sneaker_store_backend.dto.InventoryHistoryResponseDto;
 import edu.yorku.sneaker_store_backend.model.Product;
+import edu.yorku.sneaker_store_backend.service.InventoryHistoryService;
 import edu.yorku.sneaker_store_backend.service.ProductAdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,12 @@ import java.util.List;
 public class AdminProductController {
 
     private final ProductAdminService productAdminService;
+    private final InventoryHistoryService inventoryHistoryService;
 
-    public AdminProductController(ProductAdminService productAdminService) {
+    public AdminProductController(ProductAdminService productAdminService,
+                                  InventoryHistoryService inventoryHistoryService) {
         this.productAdminService = productAdminService;
+        this.inventoryHistoryService = inventoryHistoryService;
     }
 
     /**
@@ -77,5 +82,25 @@ public class AdminProductController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * GET /api/admin/products/{id}/inventory-history
+     * <p>
+     * Returns price change, transaction, and restock logs so the admin UI can display a timeline
+     * when the user clicks on a product.
+     */
+    @GetMapping("/{id}/inventory-history")
+    public ResponseEntity<?> getInventoryHistory(@PathVariable Long id) {
+        try {
+            InventoryHistoryResponseDto history = inventoryHistoryService.getHistoryForProduct(id);
+            return ResponseEntity.ok(history);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error(ex.getMessage()));
+        }
+    }
+
+    private java.util.Map<String, String> error(String message) {
+        return java.util.Map.of("message", message);
     }
 }

@@ -29,13 +29,16 @@ public class CheckoutService {
     private final ProductRepository productRepository;
     private final CustomerRepository customerRepository;
     private final OrderRepository orderRepository;
+    private final InventoryHistoryService inventoryHistoryService;
 
     public CheckoutService(ProductRepository productRepository,
                            CustomerRepository customerRepository,
-                           OrderRepository orderRepository) {
+                           OrderRepository orderRepository,
+                           InventoryHistoryService inventoryHistoryService) {
         this.productRepository = productRepository;
         this.customerRepository = customerRepository;
         this.orderRepository = orderRepository;
+        this.inventoryHistoryService = inventoryHistoryService;
     }
 
     /**
@@ -78,9 +81,10 @@ public class CheckoutService {
 
         BigDecimal total = BigDecimal.ZERO;
         List<Product> updatedProducts = new ArrayList<>();
+        List<SaleAdjustment> saleAdjustments = new ArrayList<>();
 
         for (CheckoutItemDto itemDto : request.getItems()) {
-            OrderItem orderItem = buildOrderItem(order, itemDto);
+            OrderItem orderItem = buildOrderItem(order, itemDto, saleAdjustments);
             updatedProducts.add(orderItem.getProduct());
             total = total.add(orderItem.getLineTotal());
             order.getItems().add(orderItem);
@@ -89,6 +93,15 @@ public class CheckoutService {
         order.setTotalAmount(total);
         productRepository.saveAll(updatedProducts);
         Order savedOrder = orderRepository.save(order);
+
+        saleAdjustments.forEach(adj ->
+                inventoryHistoryService.recordSale(
+                        adj.product(),
+                        adj.previousStock(),
+                        adj.newStock(),
+                        adj.quantity(),
+                        savedOrder.getId()
+                ));
 
         return CheckoutResponseDto.builder()
                 .orderId(savedOrder.getId())
@@ -100,7 +113,9 @@ public class CheckoutService {
                 .build();
     }
 
-    private OrderItem buildOrderItem(Order order, CheckoutItemDto itemDto) {
+    private OrderItem buildOrderItem(Order order,
+                                    CheckoutItemDto itemDto,
+                                    List<SaleAdjustment> saleAdjustments) {
         Product product = resolveProduct(itemDto);
         int quantity = itemDto.getQuantity() != null ? itemDto.getQuantity() : 0;
         if (quantity <= 0) {
@@ -112,7 +127,9 @@ public class CheckoutService {
             throw new IllegalStateException("Insufficient stock for product: " + product.getName());
         }
 
-        product.setStockQuantity(currentStock - quantity);
+        int newStock = currentStock - quantity;
+        product.setStockQuantity(newStock);
+        saleAdjustments.add(new SaleAdjustment(product, currentStock, newStock, quantity));
         BigDecimal unitPrice = product.getPrice();
         BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(quantity));
 
@@ -198,5 +215,8 @@ public class CheckoutService {
 
     private String normalizeSize(String size) {
         return hasText(size) ? size.trim() : null;
+    }
+
+    private record SaleAdjustment(Product product, int previousStock, int newStock, int quantity) {
     }
 }
