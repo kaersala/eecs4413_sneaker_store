@@ -58,8 +58,6 @@ const Register = () => {
 					try {
 						const loginResponse = await AuthService.loginUser({ email: formData.email, password: formData.password });
 						if (loginResponse.token && loginResponse.customerId) {
-							const role = formData.email === 'demo@sneakerstore.test' ? 'ADMIN' : 'USER';
-							localStorage.setItem('role', role);
 							navigate(redirectTo, { replace: true });
 							return;
 						}

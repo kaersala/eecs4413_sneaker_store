@@ -7,11 +7,12 @@ INSERT INTO customers (
     city, province, postal_code, country,
     billing_address_line1, billing_address_line2, billing_city,
     billing_province, billing_postal_code, billing_country,
-    credit_card_holder, credit_card_number, credit_card_expiry, credit_card_cvv
+    credit_card_holder, credit_card_number, credit_card_expiry, credit_card_cvv,
+    role
 )
 VALUES
 ('Alice','Wong','alice@example.com','$2a$10$fakehash1','416-555-0001','123 King St','Unit 905','Toronto','ON','M5H1A1','Canada',
- '123 King St','Unit 905','Toronto','ON','M5H1A1','Canada','Alice Wong','4111111111111111','12/28','101'),
+ '123 King St','Unit 905','Toronto','ON','M5H1A1','Canada','Alice Wong','4111111111111111','12/28','101','CUSTOMER'),
 ('Bob','Chen','bob@example.com','$2a$10$fakehash2','647-555-0002','456 Queen St','Apt 1203','Markham','ON','L3R2Y8','Canada',
  '456 Queen St','Apt 1203','Markham','ON','L3R2Y8','Canada','Bob Chen','5555444433332222','11/27','202'),
 ('Chris','Lee','chris@example.com','$2a$10$fakehash3','416-555-0003','89 Yonge St',NULL,'Toronto','ON','M5E1A1','Canada',
@@ -31,7 +32,7 @@ VALUES
 ('Jenny','Liu','jenny@example.com','$2a$10$fakehash10','416-555-0010','88 Dundas St',NULL,'Toronto','ON','M5B1C6','Canada',
  '88 Dundas St',NULL,'Toronto','ON','M5B1C6','Canada','Jenny Liu','6011111111111117','06/28','987'),
 ('Demo','Admin','demo@sneakerstore.test','$2y$10$176gsMzrx50I5jLY9MknGOpp2mS/FPLNB3QsT6unusT0OFWTUS4CS','000-000-0000','1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada',
- '1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada','Demo Admin','4242424242424242','12/30','111');
+ '1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada','Demo Admin','4242424242424242','12/30','111','ADMIN');
 -- Seed products
 INSERT INTO products (sku, name, brand, description, price, stock_quantity, image_url)
 VALUES

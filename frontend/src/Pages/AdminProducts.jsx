@@ -12,7 +12,7 @@ const AdminProduct = () => {
 	const [historyData, setHistoryData] = useState(null);
 	const [historyLoading, setHistoryLoading] = useState(false);
 	const [historyError, setHistoryError] = useState('');
-	const [formData, setFormData] = useState({
+	const emptyProduct = {
 		id: null,
 		sku: '',
 		name: '',
@@ -21,7 +21,9 @@ const AdminProduct = () => {
 		price: '',
 		stockQuantity: '',
 		imageUrl: '',
-	});
+	};
+
+	const [formData, setFormData] = useState(emptyProduct);
 
 	useEffect(() => {
 		fetchProducts();
@@ -48,16 +50,7 @@ const AdminProduct = () => {
 	};
 
 	const handleAddNew = () => {
-		setFormData({
-			id: null,
-			sku: '',
-			name: '',
-			brand: '',
-			description: '',
-			price: '',
-			stockQuantity: '',
-			imageUrl: '',
-		});
+		setFormData(emptyProduct);
 		setIsEditing(false);
 		setFormVisible(true);
 	};
@@ -210,7 +203,7 @@ const AdminProduct = () => {
 							<input type="text" name="imageUrl" value={formData.imageUrl} onChange={handleChange} className={inputClass}
 							/>
 						</div>
-					</div>
+						</div>
 
 						<div className="flex space-x-3 mt-4">
 							<button

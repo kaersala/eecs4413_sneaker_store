@@ -1,7 +1,9 @@
 package edu.yorku.sneaker_store_backend.service;
 
 import edu.yorku.sneaker_store_backend.model.Product;
+import edu.yorku.sneaker_store_backend.model.Sneaker;
 import edu.yorku.sneaker_store_backend.repository.ProductRepository;
+import edu.yorku.sneaker_store_backend.repository.SneakerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,11 +16,14 @@ import java.util.Objects;
 public class ProductAdminService {
 
     private final ProductRepository productRepository;
+    private final SneakerRepository sneakerRepository;
     private final InventoryHistoryService inventoryHistoryService;
 
     public ProductAdminService(ProductRepository productRepository,
+                               SneakerRepository sneakerRepository,
                                InventoryHistoryService inventoryHistoryService) {
         this.productRepository = productRepository;
+        this.sneakerRepository = sneakerRepository;
         this.inventoryHistoryService = inventoryHistoryService;
     }
 
@@ -31,7 +36,9 @@ public class ProductAdminService {
     }
 
     public Product create(Product product) {
-        return productRepository.save(product);
+        Product saved = productRepository.save(product);
+        synchronizeSneaker(saved);
+        return saved;
     }
 
     public Product update(Long id, Product payload) {
@@ -62,6 +69,8 @@ public class ProductAdminService {
             inventoryHistoryService.recordStockAdjustment(saved, previousStock, saved.getStockQuantity());
         }
 
+        synchronizeSneaker(saved);
+
         return saved;
     }
 
@@ -71,5 +80,28 @@ public class ProductAdminService {
         }
         productRepository.deleteById(id);
         return true;
+    }
+
+    private void synchronizeSneaker(Product product) {
+        if (product == null) {
+            return;
+        }
+        Sneaker sneaker = sneakerRepository.findFirstByNameIgnoreCase(product.getName())
+                .orElseGet(Sneaker::new);
+
+        sneaker.setName(product.getName());
+        sneaker.setBrand(product.getBrand());
+        sneaker.setColorway(null);
+        sneaker.setPrice(product.getPrice());
+        sneaker.setStock(product.getStockQuantity());
+        sneaker.setCategory(null);
+        sneaker.setGenre(null);
+        sneaker.setDescription(product.getDescription());
+        sneaker.setImageUrl(product.getImageUrl());
+        if (sneaker.getAvailableSizes() == null || sneaker.getAvailableSizes().isEmpty()) {
+            sneaker.setAvailableSizes(List.of("8", "9", "10"));
+        }
+
+        sneakerRepository.save(sneaker);
     }
 }

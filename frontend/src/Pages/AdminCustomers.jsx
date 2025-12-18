@@ -70,6 +70,8 @@ const AdminCustomer = () => {
 		} catch (err) {
 			if (err?.response?.status === 409) {
 				alert("You can't delete the customer who has an active order.");
+			} else if (err?.response?.status === 403) {
+				alert("Admin accounts cannot be deleted.");
 			} else {
 				console.error('Failed to delete customer', err);
 				alert('Failed to delete customer. Please try again.');
@@ -156,12 +158,25 @@ const AdminCustomer = () => {
 										>
 											Edit
 										</button>
-										<button
-											onClick={() => handleDelete(c.id)}
-											className={`bg-brand-accent ${buttonBaseClass} hover:bg-brand-accent-dark`}
-										>
-											Delete
-										</button>
+										{(() => {
+											const isAdminAccount = c.role === 'ADMIN';
+											const deleteClass = isAdminAccount
+												? 'px-4 py-2 rounded-full bg-brand-muted text-brand-secondary cursor-not-allowed opacity-60'
+												: `bg-brand-accent ${buttonBaseClass} hover:bg-brand-accent-dark`;
+											return (
+												<button
+													onClick={() => {
+														if (!isAdminAccount) {
+															handleDelete(c.id);
+														}
+													}}
+													disabled={isAdminAccount}
+													className={deleteClass}
+												>
+													Delete
+												</button>
+											);
+										})()}
 								</td>
 							</tr>
 						))

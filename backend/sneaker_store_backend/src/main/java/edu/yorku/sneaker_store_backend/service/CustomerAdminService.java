@@ -52,6 +52,9 @@ public class CustomerAdminService {
         existing.setCreditCardNumber(payload.getCreditCardNumber());
         existing.setCreditCardExpiry(payload.getCreditCardExpiry());
         existing.setCreditCardCvv(payload.getCreditCardCvv());
+        if (payload.getRole() != null && !payload.getRole().isBlank()) {
+            existing.setRole(payload.getRole());
+        }
         if (payload.getPasswordHash() != null && !payload.getPasswordHash().isBlank()) {
             existing.setPasswordHash(payload.getPasswordHash());
         }
@@ -62,6 +65,10 @@ public class CustomerAdminService {
     public boolean delete(Long id) {
         if (!customerRepository.existsById(id)) {
             return false;
+        }
+        Customer customer = findById(id);
+        if (customer != null && "ADMIN".equalsIgnoreCase(customer.getRole())) {
+            throw new IllegalArgumentException("Cannot delete admin account");
         }
         customerRepository.deleteById(id);
         return true;

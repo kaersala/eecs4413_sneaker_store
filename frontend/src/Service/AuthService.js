@@ -14,6 +14,7 @@ const loginUser = async (loginDetails) => {
     if (data.token) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("userId", data.customerId); 
+        localStorage.setItem("role", data.role || 'CUSTOMER');
 
         // Save full user info for Profile page
         localStorage.setItem("user", JSON.stringify({

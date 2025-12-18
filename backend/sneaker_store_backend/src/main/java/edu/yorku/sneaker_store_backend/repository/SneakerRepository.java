@@ -2,10 +2,10 @@ package edu.yorku.sneaker_store_backend.repository;
 
 import edu.yorku.sneaker_store_backend.model.Sneaker;
 import org.springframework.data.jpa.repository.JpaRepository;
-
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Repository interface for Sneaker entities.
@@ -22,4 +22,6 @@ public interface SneakerRepository extends JpaRepository<Sneaker, Long>, JpaSpec
      * Searches sneakers whose names contain a keyword (case-insensitive).
      */
     List<Sneaker> findByNameContainingIgnoreCase(String keyword);
+
+    Optional<Sneaker> findFirstByNameIgnoreCase(String name);
 }

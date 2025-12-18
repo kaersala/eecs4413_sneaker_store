@@ -18,7 +18,7 @@ const LoginSignup = () => {
 		e.preventDefault();
 		try {
 			const response = await AuthService.loginUser({ email, password });
-			const { token, customerId } = response;
+			const { token, customerId, role } = response;
 
 			if (!token || !customerId) {
 				showToast('Login failed. Please try again.', 'error');
@@ -27,14 +27,8 @@ const LoginSignup = () => {
 
 			showToast('Successfully logged in', 'success');
 			const redirectTo = location.state?.from || '/sneakers';
-
-			if (email === 'demo@sneakerstore.test') {
-				localStorage.setItem('role', 'ADMIN');
-				navigate('/admin');
-			} else {
-				localStorage.setItem('role', 'USER');
-				navigate(redirectTo);
-			}
+			const destination = role === 'ADMIN' ? '/admin' : redirectTo;
+			navigate(destination);
 		} catch (err) {
 			console.error(err);
 			showToast('Login failed. Please check email and password.', 'error');

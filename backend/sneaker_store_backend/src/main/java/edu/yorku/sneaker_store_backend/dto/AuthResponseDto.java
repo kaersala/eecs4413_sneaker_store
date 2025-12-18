@@ -21,4 +21,26 @@ public class AuthResponseDto {
     private Long customerId;
 
     private String token;
+
+    private String role;
+
+    private String firstName;
+
+    private String lastName;
+
+    private String email;
+
+    private String phoneNumber;
+
+    private String addressLine1;
+
+    private String addressLine2;
+
+    private String city;
+
+    private String province;
+
+    private String postalCode;
+
+    private String country;
 }

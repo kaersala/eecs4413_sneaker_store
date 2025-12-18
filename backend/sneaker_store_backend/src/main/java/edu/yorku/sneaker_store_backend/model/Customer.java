@@ -43,6 +43,12 @@ public class Customer {
     private String email;
 
     /**
+     * Role of the account (e.g., CUSTOMER, ADMIN).
+     */
+    @Column(nullable = false)
+    private String role = "CUSTOMER";
+
+    /**
      * BCrypt-hashed password used for basic identity management.
      */
     @Column(nullable = false)
