@@ -31,12 +31,48 @@ backend/
       application.properties       # DB credentials + server port
 ```
 
+## Database (MySQL)
+
+The backend now targets MySQL only. You can either point Spring Boot at an
+existing MySQL instance via the standard `SPRING_DATASOURCE_*` environment
+variables, or spin one up locally with Docker Compose (recommended for
+consistent team testing).
+
+### Option A – Docker Compose (recommended)
+
+```bash
+cd backend/sneaker_store_backend
+docker compose up -d mysql
+```
+
+This starts a MySQL 8 container listening on `localhost:3307` with the
+credentials baked into `src/main/resources/application.properties`:
+
+- database: `sneaker_store`
+- user / password: `sneaker_app` / `sneaker_pass`
+
+### Option B – Your own MySQL server
+
+Create the `sneaker_store` database (or reuse an existing one) and export the
+connection settings before starting the app:
+
+```bash
+export SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/sneaker_store?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+export SPRING_DATASOURCE_USERNAME=your_user
+export SPRING_DATASOURCE_PASSWORD=your_password
+```
+
 ## Getting Started
+
+Once MySQL is running:
 
 ```bash
 cd backend/sneaker_store_backend
 ./gradlew bootRun
 ```
+
+The `CommandLineRunner` seeds demo sneakers/products/customers on first run so
+the API is immediately usable.
 
 Default API base URL: `http://localhost:8080`
 
@@ -68,4 +104,5 @@ proper authentication/authorization before production use.
 ```
 
 The project ships with a minimal Spring Boot context test; extend with additional service or
-controller tests as needed when features evolve.
+controller tests as needed when features evolve. MySQL must be running (via Docker Compose
+or your own instance) before executing the test suite.
