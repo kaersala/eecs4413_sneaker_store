@@ -29,7 +29,7 @@ VALUES
  '55 Sheppard Ave','Unit 1601','Toronto','ON','M2N2Z8','Canada','Ian Kim','5105105105105100','05/27','654','CUSTOMER'),
 ('Jenny','Liu','jenny@example.com','$2a$10$fakehash10','416-555-0010','88 Dundas St',NULL,'Toronto','ON','M5B1C6','Canada',
  '88 Dundas St',NULL,'Toronto','ON','M5B1C6','Canada','Jenny Liu','6011111111111117','06/28','987','CUSTOMER'),
-('Demo','Admin','demo@sneakerstore.test','$2a$10$/LXMcAkFlRLbDiJRO8/ec.qezdwVK65W2yV3IJsN1hq3umU7MvpsO','000-000-0000','1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada',
+('Demo','Admin','demo@sneakerstore.test','$2a$10$799WzIvxE21oHIVA04picO3WllvmhzJngCWLrXIzUrAPyT1KrOj16','000-000-0000','1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada',
  '1 Admin Way',NULL,'Toronto','ON','M1M1M1','Canada','Demo Admin','4242424242424242','12/30','111','ADMIN');
 
 -- Seed products
