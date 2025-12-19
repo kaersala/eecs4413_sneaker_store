@@ -1,38 +1,51 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { BASE_URL } from '../Util/util'; 
+import SneakerService from '../Service/SneakerService';
+
 export const SneakerContext = createContext(null);
 
 const SneakerContextProvider = ({ children }) => {
-	const [all_product, setAllProduct] = useState([]);
-	const [cartItems, setCartItems] = useState({});
+  const [all_product, setAllProduct] = useState([]);
+  const [cartItems, setCartItems] = useState({});
 
-	// Fetch sneakers from backend
-	useEffect(() => {
-		const fetchSneakers = async () => {
-			try {
-				const res = await fetch(`${BASE_URL}/api/sneakers`);
+  
+  useEffect(() => {
+    const fetchSneakers = async () => {
+      try {
+        const data = await SneakerService.fetchSneakers();
+        setAllProduct(data);
 
-				if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-				const data = await res.json();
-				setAllProduct(data);
+        
+        const cart = {};
+        data.forEach((item) => {
+          cart[item.id] = 0;
+        });
+        setCartItems(cart);
+      } catch (err) {
+        console.error('Failed to fetch sneakers:', err);
+      }
+    };
 
-				// Initialize cart with product IDs
-				const cart = {};
-				data.forEach((item) => (cart[item.id] = 0));
-				setCartItems(cart);
-			} catch (err) {
-				console.error('Failed to fetch sneakers:', err);
-			}
-		};
-		fetchSneakers();
-	}, []);
+    fetchSneakers();
+  }, []);
 
-	const addToCart = (itemId) => {
-		setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
-	};
+  const addToCart = (itemId) => {
+    setCartItems((prev) => ({
+      ...prev,
+      [itemId]: (prev[itemId] || 0) + 1,
+    }));
+  };
 
-	const contextValue = { all_product, cartItems, addToCart };
-	return <SneakerContext.Provider value={contextValue}>{children}</SneakerContext.Provider>;
+  const contextValue = {
+    all_product,
+    cartItems,
+    addToCart,
+  };
+
+  return (
+    <SneakerContext.Provider value={contextValue}>
+      {children}
+    </SneakerContext.Provider>
+  );
 };
 
 export default SneakerContextProvider;

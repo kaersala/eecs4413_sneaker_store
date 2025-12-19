@@ -1,8 +1,12 @@
 // SneakerService.js
 import axios from 'axios';
-import { BASE_URL, getHeader } from '../Util/util';
+import { getHeader } from '../Util/util';
+
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const fetchSneakers = async (params = {}) => {
+  console.log(`Base url: ${BASE_URL}`)
   const response = await axios.get(`${BASE_URL}/api/sneakers`, {
     headers: getHeader(),
     params,

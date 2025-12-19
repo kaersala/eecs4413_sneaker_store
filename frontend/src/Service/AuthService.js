@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { BASE_URL } from "../Util/util";
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const buildUserProfile = (data = {}) => ({
     id: data.customerId ?? data.id ?? null,
