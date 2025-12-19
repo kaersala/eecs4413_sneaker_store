@@ -1,8 +1,5 @@
 
-
-
-
-# 👟Premium Sneaker Store
+# 👟 SoleMate - Premium Sneaker Store
 
 ![Java](https://img.shields.io/badge/Java-21-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green)
@@ -14,14 +11,6 @@
 > **EECS 4413 Project - York University**
 >
 > A full-stack e-commerce platform designed for sneaker enthusiasts. This application features a responsive React frontend, a robust Spring Boot backend, and a MySQL database deployed on the cloud.
-
-Dongling Yu 219511039
-
-Yifei Liu 218968735
-
-Hang Chen 218426106
-
-Li Sha Su 213581772
 
 ---
 
@@ -73,3 +62,66 @@ Follow these instructions to run the project on your local machine.
 ```bash
 git clone [https://github.com/dyu55/eecs4413_sneaker_store.git](https://github.com/dyu55/eecs4413_sneaker_store.git)
 cd eecs4413_sneaker_store
+
+2. Database Configuration
+ * Create a local MySQL database named sneaker_store.
+ * The backend will automatically initialize the tables using schema.sql.
+ * (Optional) Update database credentials in backend/sneaker_store_backend/src/main/resources/application.properties if your local root password is not empty.
+3. Backend Setup (Spring Boot)
+Navigate to the backend directory and start the server:
+cd backend/sneaker_store_backend
+
+# On macOS/Linux
+./gradlew bootRun
+
+# On Windows
+gradlew.bat bootRun
+
+The backend will start at http://localhost:8080.
+4. Frontend Setup (React)
+Open a new terminal, navigate to the frontend directory, and start the development server:
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start the app
+npm run dev
+
+The frontend will start at http://localhost:5173.
+📂 Project Structure
+eecs4413_sneaker_store/
+├── backend/
+│   └── sneaker_store_backend/
+│       ├── src/main/java/       # Controllers, Services, Repositories
+│       └── src/main/resources/  # application.properties, schema.sql
+├── frontend/
+│   ├── src/
+│   │   ├── components/          # Reusable UI components
+│   │   ├── pages/               # Page views (Home, Cart, Login)
+│   │   └── context/             # Global state management
+│   └── package.json
+└── README.md
+
+🔑 Admin Credentials (For Testing)
+Use the following credentials to access the Admin Dashboard functionalities:
+ * Username: admin (Please verify against your database)
+ * Password: password123 (Please verify against your database)
+📝 SQL Scripts Location
+The database initialization scripts are located in the backend resources:
+backend/sneaker_store_backend/src/main/resources/
+ * schema.sql: Creates the necessary tables.
+ * data.sql: Seeds the database with initial product data.
+👥 Contributors
+
+Dongling Yu 219511039
+
+Yifei Liu 218968735
+
+Hang Chen 218426106
+
+Li Sha Su 213581772
+
+<!-- end list -->
+
+
