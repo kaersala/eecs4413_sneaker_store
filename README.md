@@ -26,8 +26,8 @@
 ## 🚀 Live Demo
 
 - **Frontend (Vercel):** https://eecs4413-sneaker-store-deploy.vercel.app
-- **Backend API (Render):** https://eecs4413-sneaker-store-backend.onrender.com
-- **Database (Render):** PostgreSQL 16
+- **Backend API (Render):** https://eecs4413-sneaker-store.onrender.com
+- **Database (Render):** PostgreSQL 16 (managed instance seeded with schema/data.sql)
 
 ---
 
@@ -85,6 +85,9 @@ Environment variables (optional locally, required for deployment):
 | `SPRING_DATASOURCE_USERNAME` | DB user | `sneaker_app` |
 | `SPRING_DATASOURCE_PASSWORD` | DB password | `sneaker_pass` |
 | `SPRING_SQL_INIT_MODE` | `always` to recreate schema, `never` once seeded | `never` |
+| `APP_ALLOWED_ORIGINS` | Comma-separated frontend origins for CORS | `http://localhost:5173` |
+
+Copy `backend/sneaker_store_backend/.env.example` to `.env` for a ready-to-use set of variables. Detailed backend notes live in `backend/sneaker_store_backend/README.md` if you need to dive deeper.
 
 ### 4. Frontend Setup (React)
 
@@ -101,7 +104,7 @@ Create `frontend/.env` (or `.env.local`) and set the API endpoint:
 VITE_BASE_URL=http://localhost:8080
 ```
 
-For deployments change the value to your backend URL (e.g. `https://your-backend.onrender.com`).
+For deployments change the value to your backend URL (`https://eecs4413-sneaker-store.onrender.com`). Configure the same variable inside Vercel → Project Settings → Environment Variables.
 
 ---
 
@@ -125,9 +128,15 @@ Required for database initialization:
      - `SPRING_DATASOURCE_URL=jdbc:postgresql://<host>:<port>/<db>?sslmode=require`
      - `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD`
      - `SPRING_SQL_INIT_MODE=always` for the first deploy only (flip back to `never`).
+     - `APP_ALLOWED_ORIGINS=https://eecs4413-sneaker-store-deploy.vercel.app`
 3. **Schema/data** – Let Spring run `schema.sql` & `data.sql` during the first boot or execute them manually with `psql "$DATABASE_URL" -f ...`.
-4. **Frontend static site** – Point Render’s static site to `frontend/` with build `npm install && npm run build`, publish directory `dist`, env var `VITE_BASE_URL=https://<backend-service>.onrender.com`, and add a rewrite rule `/* -> /index.html`.
-5. **Verify** – `https://<backend>/api/sneakers` should return JSON; the frontend should load live data.
+   - Example manual seed:
+     ```
+     psql "postgresql://<user>:<pass>@<host>/<db>?sslmode=require" -f backend/sneaker_store_backend/src/main/resources/schema.sql
+     psql "postgresql://<user>:<pass>@<host>/<db>?sslmode=require" -f backend/sneaker_store_backend/src/main/resources/data.sql
+     ```
+4. **Frontend on Vercel** – Deploy `frontend/` with build command `npm install && npm run build` and `VITE_BASE_URL=https://eecs4413-sneaker-store.onrender.com` (set under Production + Preview envs). Vercel automatically serves `dist`.
+5. **Verify** – `https://eecs4413-sneaker-store.onrender.com/api/sneakers` should return JSON; the Vercel site should display live data without CORS errors.
 
 ## 🔑 Admin Credentials
 
@@ -145,4 +154,3 @@ Hang Chen 218426106
 Li Sha Su 213581772
 
 <!-- end list -->
-

@@ -1,4 +1,5 @@
-export const BASE_URL = 'http://localhost:8080'; 
+const FALLBACK_BASE_URL = 'http://localhost:8080';
+export const BASE_URL = import.meta.env?.VITE_BASE_URL || FALLBACK_BASE_URL;
 
 export const getHeader= (overrideToken) => {
 	const token = overrideToken || localStorage.getItem('token');
