@@ -135,7 +135,7 @@ Required for database initialization:
      psql "postgresql://<user>:<pass>@<host>/<db>?sslmode=require" -f backend/sneaker_store_backend/src/main/resources/schema.sql
      psql "postgresql://<user>:<pass>@<host>/<db>?sslmode=require" -f backend/sneaker_store_backend/src/main/resources/data.sql
      ```
-4. **Frontend on Vercel** – Deploy `frontend/` with build command `npm install && npm run build` and `VITE_BASE_URL=https://eecs4413-sneaker-store.onrender.com` (set under Production + Preview envs). Vercel automatically serves `dist`.
+4. **Frontend on Vercel** – Deploy `frontend/` with build command `npm install && npm run build` and `VITE_BASE_URL=https://eecs4413-sneaker-store.onrender.com` (set under Production + Preview envs). Keep `frontend/vercel.json` in the repo so Vercel knows to rewrite unknown routes back to `index.html` when a user refreshes `/orders`, `/cart`, etc. Vercel automatically serves `dist`.
 5. **Verify** – `https://eecs4413-sneaker-store.onrender.com/api/sneakers` should return JSON; the Vercel site should display live data without CORS errors.
 
 ## 🔑 Admin Credentials
