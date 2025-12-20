@@ -4,6 +4,7 @@ import edu.yorku.sneaker_store_backend.model.Product;
 import edu.yorku.sneaker_store_backend.model.Sneaker;
 import edu.yorku.sneaker_store_backend.repository.ProductRepository;
 import edu.yorku.sneaker_store_backend.repository.SneakerRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -78,7 +79,14 @@ public class ProductAdminService {
         if (!productRepository.existsById(id)) {
             return false;
         }
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id).orElse(null);
+        try {
+            productRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            throw new IllegalStateException("Cannot delete a product that has active orders, cart items, or inventory history.");
+        }
+
+        deleteMirroredSneaker(product);
         return true;
     }
 
@@ -103,5 +111,17 @@ public class ProductAdminService {
         }
 
         sneakerRepository.save(sneaker);
+    }
+
+    private void deleteMirroredSneaker(Product product) {
+        if (product == null || !hasText(product.getName())) {
+            return;
+        }
+        sneakerRepository.findFirstByNameIgnoreCase(product.getName())
+                .ifPresent(sneakerRepository::delete);
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.trim().isEmpty();
     }
 }

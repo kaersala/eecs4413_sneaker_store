@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import AdminProductService from '../Service/AdminProductService';
 import { useNavigate } from 'react-router-dom';
 import { resolveSneakerImage } from '../Util/util';
+import { SneakerContext } from '../Context/SneakerContext';
 
 const AdminProduct = () => {
 	const navigate = useNavigate();
+	const { refreshSneakers } = useContext(SneakerContext) || {};
 	const [products, setProducts] = useState([]);
 	const [isEditing, setIsEditing] = useState(false);
 	const [formVisible, setFormVisible] = useState(false);
@@ -12,6 +14,8 @@ const AdminProduct = () => {
 	const [historyData, setHistoryData] = useState(null);
 	const [historyLoading, setHistoryLoading] = useState(false);
 	const [historyError, setHistoryError] = useState('');
+	const [feedback, setFeedback] = useState(null);
+	const [feedbackType, setFeedbackType] = useState('success');
 	const emptyProduct = {
 		id: null,
 		sku: '',
@@ -66,16 +70,28 @@ const AdminProduct = () => {
 			setFormVisible(false);
 			setIsEditing(false);
 			fetchProducts();
+			refreshSneakers?.();
 		} catch (err) {
 			console.error('Failed to save product', err);
 		}
 	};
 
+	const showFeedback = (message, type = 'success') => {
+		setFeedback(message);
+		setFeedbackType(type);
+		setTimeout(() => setFeedback(null), 4000);
+	};
+
 	const handleDelete = async (id) => {
 		try {
 			await AdminProductService.deleteProduct(id);
+			showFeedback('Product deleted successfully.', 'success');
 			fetchProducts();
+			refreshSneakers?.();
 		} catch (err) {
+			const apiMessage = err?.response?.data?.message;
+			const fallback = 'Failed to delete product. It may have existing orders or cart items.';
+			showFeedback(apiMessage || fallback, 'error');
 			console.error('Failed to delete product', err);
 		}
 	};
@@ -141,6 +157,18 @@ const AdminProduct = () => {
 
 	return (
 		<div className="p-6 bg-brand-surface min-h-screen text-brand-primary">
+
+			{feedback && (
+				<div
+					className={`mb-4 px-4 py-3 rounded-2xl border ${
+						feedbackType === 'success'
+							? 'bg-green-50 border-green-200 text-green-800'
+							: 'bg-red-50 border-red-200 text-red-700'
+					}`}
+				>
+					{feedback}
+				</div>
+			)}
 
 			<div className="relative mb-4">
 				<button

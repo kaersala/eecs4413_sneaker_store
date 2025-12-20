@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import SneakerService from '../Service/SneakerService';
 
 export const SneakerContext = createContext(null);
@@ -7,26 +7,24 @@ const SneakerContextProvider = ({ children }) => {
   const [all_product, setAllProduct] = useState([]);
   const [cartItems, setCartItems] = useState({});
 
-  
-  useEffect(() => {
-    const fetchSneakers = async () => {
-      try {
-        const data = await SneakerService.fetchSneakers();
-        setAllProduct(data);
+  const fetchSneakers = useCallback(async () => {
+    try {
+      const data = await SneakerService.fetchSneakers();
+      setAllProduct(data);
 
-        
-        const cart = {};
-        data.forEach((item) => {
-          cart[item.id] = 0;
-        });
-        setCartItems(cart);
-      } catch (err) {
-        console.error('Failed to fetch sneakers:', err);
-      }
-    };
-
-    fetchSneakers();
+      const cart = {};
+      data.forEach((item) => {
+        cart[item.id] = 0;
+      });
+      setCartItems(cart);
+    } catch (err) {
+      console.error('Failed to fetch sneakers:', err);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchSneakers();
+  }, [fetchSneakers]);
 
   const addToCart = (itemId) => {
     setCartItems((prev) => ({
@@ -39,6 +37,7 @@ const SneakerContextProvider = ({ children }) => {
     all_product,
     cartItems,
     addToCart,
+    refreshSneakers: fetchSneakers,
   };
 
   return (

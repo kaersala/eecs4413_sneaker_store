@@ -76,12 +76,16 @@ public class AdminProductController {
      * DELETE /api/admin/products/{id}
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean deleted = productAdminService.delete(id);
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            boolean deleted = productAdminService.delete(id);
+            if (!deleted) {
+                return ResponseEntity.notFound().build();
+            }
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException ex) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error(ex.getMessage()));
         }
-        return ResponseEntity.noContent().build();
     }
 
     /**
