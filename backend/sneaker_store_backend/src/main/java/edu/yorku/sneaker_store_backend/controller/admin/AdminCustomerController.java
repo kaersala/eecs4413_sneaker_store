@@ -15,7 +15,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/admin/customers")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AdminCustomerController {
 
     private final CustomerAdminService customerAdminService;

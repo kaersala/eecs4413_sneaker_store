@@ -13,7 +13,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/sneakers")
-@CrossOrigin(origins = "http://localhost:5173")
 public class SneakerController {
 
     private final SneakerService sneakerService;

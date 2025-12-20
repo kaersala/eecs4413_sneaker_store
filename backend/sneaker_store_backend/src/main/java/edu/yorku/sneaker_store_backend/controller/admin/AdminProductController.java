@@ -15,7 +15,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/admin/products")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AdminProductController {
 
     private final ProductAdminService productAdminService;

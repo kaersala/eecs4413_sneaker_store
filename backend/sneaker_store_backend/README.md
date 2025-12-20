@@ -78,6 +78,16 @@ the API is immediately usable.
 
 Default API base URL: `http://localhost:8080`
 
+Environment variables (optional locally, required for deployment):
+
+| Variable | Description | Default |
+| --- | --- | --- |
+| `SPRING_DATASOURCE_URL` | JDBC URL | `jdbc:postgresql://localhost:5433/sneaker_store` |
+| `SPRING_DATASOURCE_USERNAME` | DB user | `sneaker_app` |
+| `SPRING_DATASOURCE_PASSWORD` | DB password | `sneaker_pass` |
+| `SPRING_SQL_INIT_MODE` | `always` to recreate schema, `never` once seeded | `never` |
+| `APP_ALLOWED_ORIGINS` | Comma-separated frontend origins for CORS | `http://localhost:5173` |
+
 Update `src/main/resources/application.properties` to match your PostgreSQL credentials.
 
 ## Deploying on Render
@@ -90,6 +100,7 @@ Update `src/main/resources/application.properties` to match your PostgreSQL cred
    - `SPRING_DATASOURCE_URL` = converted JDBC URL (or keep Render's `DATABASE_URL` and reference it in `application.properties`).
    - `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` = credentials Render shows beside the database.
    - `SPRING_SQL_INIT_MODE=always` for the first deploy so Spring runs `schema.sql` and `data.sql`, then switch it back to `never` to avoid wiping data on subsequent releases.
+   - `APP_ALLOWED_ORIGINS=https://<your-vercel-app>.vercel.app,https://<any-other-frontend>`
 4. **Manual seeding option** – Alternatively run
    ```bash
    psql "$DATABASE_URL" -f src/main/resources/schema.sql
